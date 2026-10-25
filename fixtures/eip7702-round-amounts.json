@@ -1,0 +1,160 @@
+{
+  "name": "eip7702-round-amounts",
+  "description": "EIP-7702 smart wallet: low reuse, round-amount transfers, and no first-funding search because its balance can move without its nonce.",
+  "addresses": [
+    "0x818A803b239F3061d87C113bA2604010AbB914f1"
+  ],
+  "options": {
+    "toBlock": 97736780,
+    "blocks": 15000
+  },
+  "expected": {
+    "spec": "zhook-leak-check/1",
+    "chainId": 4663,
+    "address": "0x818A803b239F3061d87C113bA2604010AbB914f1",
+    "kind": "eip7702",
+    "nonce": 6,
+    "window": {
+      "fromBlock": 97721781,
+      "toBlock": 97736780,
+      "complete": true,
+      "error": null,
+      "blocks": 15000,
+      "approxMinutes": 26
+    },
+    "findings": [
+      {
+        "id": "address-reuse",
+        "title": "Reused address: 6 transactions sent",
+        "status": "found",
+        "severity": "low",
+        "detail": "Every transaction from one address is linkable to every other one from it. The more trades share an address, the more of your history one lookup reveals.",
+        "evidence": [
+          {
+            "tx": "0x265ee157ffbf6a11ac67b8708810f35a09a0753c7328781972aa319a0fe4d635",
+            "block": 97723194,
+            "note": "Sent 5 USDG from this address"
+          },
+          {
+            "tx": "0xfe4b5b6edb3cd8875117667dcdd8b6e48e3e977d7916f739ad083927f9c20f98",
+            "block": 97722037,
+            "note": "Sent 848.84416 CREORA from this address"
+          }
+        ],
+        "fix": "Trade from a fresh address each time, so one trade can't be joined to the others."
+      },
+      {
+        "id": "amount-match",
+        "title": "No matching in and out amounts in the last ~26 min (blocks 97,721,781–97,736,780)",
+        "status": "clear",
+        "severity": "none",
+        "detail": "No outgoing transfer repeats an amount this address received.",
+        "evidence": [],
+        "fix": "Don't pass on the exact amount you received. Split it, keep part, or send in irregular sizes so the two sides can't be paired."
+      },
+      {
+        "id": "round-amounts",
+        "title": "1 round-amount transfer in the last ~26 min (blocks 97,721,781–97,736,780)",
+        "status": "found",
+        "severity": "low",
+        "detail": "Round amounts are the easiest to match against a deposit or withdrawal on another address.",
+        "evidence": [
+          {
+            "tx": "0x265ee157ffbf6a11ac67b8708810f35a09a0753c7328781972aa319a0fe4d635",
+            "block": 97723194,
+            "note": "Sent 5 USDG"
+          }
+        ],
+        "fix": "Use irregular sizes (1,037.42 rather than 1,000) so amounts can't be matched across addresses."
+      },
+      {
+        "id": "timing",
+        "title": "No fast in-and-out in the last ~26 min (blocks 97,721,781–97,736,780)",
+        "status": "clear",
+        "severity": "none",
+        "detail": "No outgoing transfer within 20 blocks (~2 s) of an incoming one.",
+        "evidence": [],
+        "fix": "Leave a longer, random delay between receiving funds and moving them on."
+      },
+      {
+        "id": "gas-funder",
+        "fix": "Fund each trading wallet's gas from a source that isn't tied to your other wallets, not straight from your main wallet.",
+        "title": "Gas funder: not checked",
+        "status": "not-checked",
+        "severity": "none",
+        "detail": "Only plain wallets (EOAs) are searched: a contract or EIP-7702 account can move ETH without its nonce.",
+        "evidence": []
+      },
+      {
+        "id": "shared-funder",
+        "title": "No shared funders in the last ~26 min (blocks 97,721,781–97,736,780)",
+        "status": "clear",
+        "severity": "none",
+        "detail": "No tokens arrived here other than swap payouts.",
+        "evidence": [],
+        "fix": "Don't fund trading wallets from one shared source; each one funded from the same address is linked to the rest."
+      },
+      {
+        "id": "tracker",
+        "title": "Nobody followed more than one of 1 trade",
+        "status": "clear",
+        "severity": "none",
+        "detail": "For each recent swap output, the same token from the same source went to 1 other address(es) in the next 100 blocks (~10 s), but no address did so twice. One follower on a popular token is noise; repeats are the signal.",
+        "evidence": [
+          {
+            "tx": "0xfe4b5b6edb3cd8875117667dcdd8b6e48e3e977d7916f739ad083927f9c20f98",
+            "block": 97722037,
+            "note": "Your trade"
+          }
+        ],
+        "fix": "Copy-trade bots key on a known wallet. Trades from fresh addresses give them nothing to follow."
+      }
+    ],
+    "summary": {
+      "high": 0,
+      "medium": 0,
+      "low": 2,
+      "clear": 4,
+      "notChecked": 1
+    }
+  },
+  "rpc": {
+    "eth_call a8a8529b6999a21598b63d3dffa84827": {"result":"0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000455534447000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000064352454f524100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000012"},
+    "eth_getCode e835d4aa84c51036917e56bd15d0dbd4": {"result":"0xef010077021100bd87b7008e5e1989d0eb38555d0d0000"},
+    "eth_getLogs 10c2e66ebbedebb2ea685798ae2c5836": {"result":[]},
+    "eth_getLogs 19756f8b638444a1754d33489c3ecc6c": {"result":[{"address":"0x5fc5360d0400a0fd4f2af552add042d716f1d168","blockHash":"0xa0a16fca2f7c69e3fc4c8ed62a1a17396704c99cb9bfb887f9470c94053a9214","blockNumber":"0x5d3233a","blockTimestamp":"0x6ade2da0","data":"0x00000000000000000000000000000000000000000000000000000000004c4b40","logIndex":"0x3","removed":false,"topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x000000000000000000000000818a803b239f3061d87c113ba2604010abb914f1","0x00000000000000000000000024a4d86c8a76b00ee9566ed9c9ff4f0c3faf0da7"],"transactionHash":"0x265ee157ffbf6a11ac67b8708810f35a09a0753c7328781972aa319a0fe4d635","transactionIndex":"0x3"}]},
+    "eth_getLogs 2b1f7823921827ed0dda503de949673e": {"result":[]},
+    "eth_getLogs 3396171f35eab4c882f0dbe61dce743d": {"result":[]},
+    "eth_getLogs 34c9d427ffa7d67007bce058e9389994": {"result":[]},
+    "eth_getLogs 34d8ecdd6e7cf73407e54255a49baac6": {"result":[]},
+    "eth_getLogs 39a962189f4e85f0ed031f5d9c490fdd": {"result":[]},
+    "eth_getLogs 3ad9eda332a3ef63bab98c8ca1dba067": {"result":[]},
+    "eth_getLogs 4c00603b017435f0e1641ca4ebfee932": {"result":[]},
+    "eth_getLogs 56bbad9e9284cb562ca5d0b993df84d0": {"result":[]},
+    "eth_getLogs 5b663321c81acfde8d678e365e260886": {"result":[]},
+    "eth_getLogs 5cf17159fbc8c7188f0e12ec788c3a9b": {"result":[]},
+    "eth_getLogs 659ffdaf17f89971a64bf6c75ba9a322": {"result":[{"address":"0x5fc5360d0400a0fd4f2af552add042d716f1d168","blockHash":"0x626ab48acd8169a803ac6f623ed41e4ffc820c1e5789d3da1f70d344125856eb","blockNumber":"0x5d31eb5","blockTimestamp":"0x6ade2d27","data":"0x00000000000000000000000000000000000000000000000000000000000f1409","logIndex":"0x13","removed":false,"topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x0000000000000000000000008876789976decbfcbbbe364623c63652db8c0904","0x000000000000000000000000818a803b239f3061d87c113ba2604010abb914f1"],"transactionHash":"0xfe4b5b6edb3cd8875117667dcdd8b6e48e3e977d7916f739ad083927f9c20f98","transactionIndex":"0x5"}]},
+    "eth_getLogs 69ffd8ce097ca9b0f709d4f09949e9cf": {"result":[]},
+    "eth_getLogs 779537c5d86f8c17ce3b3374c080bf14": {"result":[{"address":"0x5fc5360d0400a0fd4f2af552add042d716f1d168","blockHash":"0x0a84152745d93b263ba0dd94b2e53d6aa8c7e3783a7309e91576ab68926e91e5","blockNumber":"0x5d31eb8","blockTimestamp":"0x6ade2d27","data":"0x0000000000000000000000000000000000000000000000000000000002c905fe","logIndex":"0x3","removed":false,"topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x0000000000000000000000008876789976decbfcbbbe364623c63652db8c0904","0x0000000000000000000000008366a39cc670b4001a1121b8f6a443a643e40951"],"transactionHash":"0xc571d2a4ea7835d981e12ce128a5dfd0ce5c962d89c486ed509f0e19b559e0a7","transactionIndex":"0x1"}]},
+    "eth_getLogs 799cb46424ae8e525bda0f4d74b33fb7": {"result":[]},
+    "eth_getLogs 821c43504c537ed2010813833bb1d89e": {"result":[]},
+    "eth_getLogs 8917c8b4397448384febe7511d7ea04a": {"result":[]},
+    "eth_getLogs 8e8d9fe6e30e7a57ebda20ed2bef3516": {"result":[]},
+    "eth_getLogs 96343ab5aad575c3389fa8e7c8109435": {"result":[]},
+    "eth_getLogs 978cfeb17ed957ed32003b63d24ea831": {"result":[]},
+    "eth_getLogs 98ee4be1a2a29da393068c72fb48c4de": {"result":[]},
+    "eth_getLogs b70d20b301aaf33e694ce94e12e8b829": {"result":[]},
+    "eth_getLogs ba0692648e62c468bfdab44ed6b22c27": {"result":[]},
+    "eth_getLogs bdcbabe183c6f37aa8bda292cb39898f": {"result":[{"address":"0xb11384a6ac2b3708e3d25a834c8a88687accbcd1","blockHash":"0x626ab48acd8169a803ac6f623ed41e4ffc820c1e5789d3da1f70d344125856eb","blockNumber":"0x5d31eb5","blockTimestamp":"0x6ade2d27","data":"0x00000000000000000000000000000000000000000000002e04144217d740cc31","logIndex":"0xc","removed":false,"topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x000000000000000000000000818a803b239f3061d87c113ba2604010abb914f1","0x0000000000000000000000008876789976decbfcbbbe364623c63652db8c0904"],"transactionHash":"0xfe4b5b6edb3cd8875117667dcdd8b6e48e3e977d7916f739ad083927f9c20f98","transactionIndex":"0x5"}]},
+    "eth_getLogs ca3b6ec87019604fa0d187f51d94a108": {"result":[]},
+    "eth_getLogs cce5f21040c86880476a5762fcdffc7e": {"result":[]},
+    "eth_getLogs d2656175ad1581f1036ac3e5e81b013f": {"result":[]},
+    "eth_getLogs e00d761aacce8b66bde81e345a466d1d": {"result":[]},
+    "eth_getLogs f53fee2acf83af14884b7b7d95d0b227": {"result":[]},
+    "eth_getLogs f5b40c2f05f9cd52eb68b14dcba02d4c": {"result":[]},
+    "eth_getLogs f64061e82857cab3921db17287dc1a07": {"result":[]},
+    "eth_getLogs fa5e9c14bb1a2b3a7184d0be22c33f55": {"result":[]},
+    "eth_getLogs fc2e08fa3cc7a539a7b468131b785ad7": {"result":[]},
+    "eth_getTransactionCount e835d4aa84c51036917e56bd15d0dbd4": {"result":"0x6"}
+  }
+}
