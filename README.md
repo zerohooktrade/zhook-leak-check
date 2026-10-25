@@ -3,7 +3,7 @@
 What links a Robinhood Chain wallet to its trades? `zhook-leak-check` runs fixed, visible rules over public chain
 data and returns each finding with a severity, the transactions that show it, and the fix.
 
-It is the open version of the leak score and tracker check in the [Zerohook app](https://app.zerohook.trade).
+It is the open version of the leak score and tracker check in the [Zerohook app](https://dapp.zerohook.trade).
 
 - Public RPCs only. No API key, no indexer: logs are read in 1,000-block ranges from a public log RPC.
 - Every finding cites transaction hashes you can open in the explorer.
@@ -12,9 +12,9 @@ It is the open version of the leak score and tracker check in the [Zerohook app]
 ## Install
 
 ```sh
-pnpm add @zhooktrade/leak-check
+pnpm add @zerohooktrade/leak-check
 # or run the CLI without installing
-pnpm dlx @zhooktrade/leak-check <address>
+pnpm dlx @zerohooktrade/leak-check <address>
 ```
 
 Node 20 or newer.
@@ -85,7 +85,7 @@ without their nonce.
 ## Library
 
 ```ts
-import { leakCheck, leakCheckMany } from "@zhooktrade/leak-check";
+import { leakCheck, leakCheckMany } from "@zerohooktrade/leak-check";
 
 const report = await leakCheck("0x1CBe…4E69", { blocks: 30_000 });
 report.summary; // { high: 0, medium: 1, low: 2, clear: 4, notChecked: 0 }
@@ -133,8 +133,8 @@ pnpm record <name> "<description>" <address> [<address> ...]  # records a new fi
 ## Links
 
 - Docs: https://docs.zerohook.trade
-- App: https://app.zerohook.trade
-- Website: https://preview.zerohook.trade
+- App: https://dapp.zerohook.trade
+- Website: https://zerohook.trade
 
 ## License
 

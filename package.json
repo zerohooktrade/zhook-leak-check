@@ -1,5 +1,5 @@
 {
-  "name": "@zhooktrade/leak-check",
+  "name": "@zerohooktrade/leak-check",
   "version": "0.1.0",
   "description": "Rule-based checks for what links a Robinhood Chain wallet to its trades: address reuse, amount matches, timing, gas funder, shared funders and copy-trade followers, from public RPC logs with no indexer.",
   "license": "MIT",
@@ -7,9 +7,9 @@
   "homepage": "https://docs.zerohook.trade",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zhooktrade/zhook-leak-check.git"
+    "url": "git+https://github.com/zerohooktrade/zhook-leak-check.git"
   },
-  "bugs": "https://github.com/zhooktrade/zhook-leak-check/issues",
+  "bugs": "https://github.com/zerohooktrade/zhook-leak-check/issues",
   "keywords": [
     "zerohook",
     "privacy",
