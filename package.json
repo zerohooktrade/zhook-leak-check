@@ -1,0 +1,66 @@
+{
+  "name": "@zhooktrade/leak-check",
+  "version": "0.1.0",
+  "description": "Rule-based checks for what links a Robinhood Chain wallet to its trades: address reuse, amount matches, timing, gas funder, shared funders and copy-trade followers, from public RPC logs with no indexer.",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://docs.zerohook.trade",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhooktrade/zhook-leak-check.git"
+  },
+  "bugs": "https://github.com/zhooktrade/zhook-leak-check/issues",
+  "keywords": [
+    "zerohook",
+    "privacy",
+    "wallet",
+    "linkability",
+    "copy-trading",
+    "robinhood-chain",
+    "viem"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "zhook-leak-check": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:live": "vitest run test/live.test.ts",
+    "record": "tsx scripts/record.ts"
+  },
+  "dependencies": {
+    "viem": "^2.56.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.38.0",
+    "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.4"
+  }
+}
